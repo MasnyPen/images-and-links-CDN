@@ -1,0 +1,5 @@
+CREATE TABLE links (
+  original_link VARCHAR(255) NOT NULL,
+  link_id VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

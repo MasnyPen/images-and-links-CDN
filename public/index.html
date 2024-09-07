@@ -4,35 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDN Image Upload</title>
+    <title>PCreators CDN Upload</title>
 
     <link rel="stylesheet" href="style.css">
+    <title>PCreators CDN Upload</title>
+    <link rel="shortcut icon" href="/Logo.png" type="image/x-icon">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta property="og:title" content="PCreators CDN Upload" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cdn.pcreators.pl/" />
+    <meta property="og:image" content="https://www.pliki.piotrkuzm.cf/pcreators-logo.png" />
+    <meta property="og:description" content="Przesyłaj zdjęcia i linki szybko i bez wysiłku." />
 </head>
 
 <body>
     <main>
         <form id="loginForm" onsubmit="login(event)">
             <h1>Logowanie do CDN</h1>
-            <label for="username">Nazwa użytkownika:</label><br>
-            <input type="text" id="username" name="username" required><br><br>
-            <label for="password">Hasło:</label><br>
-            <input type="password" id="password" name="password" required><br><br>
+            <label for="username">Nazwa użytkownika:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Hasło:</label>
+            <input type="password" id="password" name="password" required>
             <button type="submit">Zaloguj się</button>
         </form>
 
-        <br><br>
+        <div id="cdn">
+            <form id="uploadForm" onsubmit="uploadFile(event)">
+                <h2>Prześlij zdjęcie</h2>
+                <label for="file" id="file-label">
+                    <input type="file" id="file" name="file" required>
+                    Wybierz plik
+                </label>
+                <button type="submit">Prześlij plik</button>
+            </form>
 
+            <form id="LinksForm" onsubmit="uploadLinks(event)">
+                <h2>Skróć link</h2>
+                <label for="link">Wpisz link:</label>
+                <input type="text" id="link" name="link" required>
+                <button type="submit">Skróć link</button>
+            </form>
 
-        <form id="uploadForm" onsubmit="uploadFile(event)">
-            <h2>Prześlij zdjęcie</h2>
-            <label for="file">Wybierz plik:</label><br>
-            <input type="file" id="file" name="file" required><br><br>
-            <button type="submit">Prześlij plik</button>
-        </form>
-
-        <br><br>
-
-        <button id="logout" onclick="logout()">Wyloguj</button>
+            <button id="logout" onclick="logout()">Wyloguj</button>
+        </div>
     </main>
     <script src="script.js"></script>
 </body>

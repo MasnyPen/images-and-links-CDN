@@ -2,14 +2,17 @@ const express = require("express")
 const multer = require("multer")
 const { v4: uuidv4 } = require("uuid")
 const path = require("path")
-const { verifyToken, users } = require("./auth.js")
+const { verifyToken, users } = require("./lib/auth.js")
 require("dotenv/config")
 const bodyParser = require("body-parser")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const { connect, db } = require("./lib/database.js")
+const { generate } = require("./lib/generator.js")
 
 const app = express()
 const PORT = process.env.PORT || 3000
+connect()
 
 // Konfiguracja multer
 const storage = multer.diskStorage({
@@ -17,7 +20,7 @@ const storage = multer.diskStorage({
     cb(null, "imgs/")
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = uuidv4()
+    const uniqueSuffix = generate()
     const fileExtension = path.extname(file.originalname)
     cb(null, `${uniqueSuffix}${fileExtension}`)
   },
@@ -42,7 +45,7 @@ const upload = multer({
   },
 })
 
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 // Endpoint logowania
@@ -78,8 +81,8 @@ app.post("/login", (req, res) => {
   res.send({ token })
 })
 
-// Endpoint do przesyłania zdjęć
-app.post("/upload", verifyToken, (req, res, next) => {
+// Endpoint do zdjęć
+app.post("/images", verifyToken, (req, res, next) => {
   upload.single("image")(req, res, err => {
     if (err instanceof multer.MulterError) {
       return res
@@ -104,11 +107,54 @@ app.post("/upload", verifyToken, (req, res, next) => {
   })
 })
 
-// Endpoint do serwowania zdjęć
 app.use("/images", express.static(path.join(__dirname, "imgs")))
 
 // Serwowanie pliku index.html na ścieżce '/'
 app.use("/", express.static(path.join(__dirname, "public")))
+
+// linki
+
+app.post("/links", verifyToken, upload.none(), async (req, res, next) => {
+  const link = req.body.link
+
+  if (!link) {
+    return res.status(400).send({ error: "Brak linku w żądaniu" })
+  }
+
+  const linkId = generate()
+  const shortenedLink = `${req.protocol}://${req.get("host")}/${linkId}`
+
+  db.query(
+    "INSERT INTO links (original_link, link_id) VALUES (?, ?)",
+    [link, linkId],
+    (err, results) => {
+      if (err) {
+        return res.status(500).send({ error: "Błąd zapisu w bazie danych" })
+      }
+      res.send({
+        message: "Link skrócony pomyślnie!",
+        url: shortenedLink,
+      })
+    }
+  )
+})
+
+app.get("/:linkId", (req, res) => {
+  const linkId = req.params.linkId
+
+  db.query(
+    "SELECT original_link FROM links WHERE link_id = ?",
+    [linkId],
+    (err, results) => {
+      if (err || results.length === 0) {
+        return res.status(404).send({ error: "Link nie znaleziony" })
+      }
+
+      const originalLink = results[0].original_link
+      res.redirect(originalLink)
+    }
+  )
+})
 
 // Uruchomienie serwera
 app.listen(PORT, () => {

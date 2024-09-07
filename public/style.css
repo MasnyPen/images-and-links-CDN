@@ -28,18 +28,45 @@ main {
   background-color: #ddd;
   padding: 2.6rem;
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-#file {
-  margin-top: 1rem;
+#cdn {
+  display: none;
+}
+
+#file-label {
+  border: none;
+  background-color: rgb(3, 112, 255);
+  color: #fff;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  padding: 0.4rem;
+  margin: 0 auto;
+}
+input[type="file"] {
+  display: none;
+}
+
+#uploadForm,
+#LinksForm,
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   margin-bottom: 1rem;
 }
+
+#uploadForm h2,
+#LinksForm h2,
 #loginForm h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 button {
   border: none;
-  background-color: blue;
+  background-color: #8627ff;
   color: #fff;
   border-radius: 9px;
   padding: 0.6rem;
