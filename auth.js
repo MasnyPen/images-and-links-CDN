@@ -1,11 +1,14 @@
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
+const username = process.env.USERNAME || "user1"
+const pass = process.env.PASSWORD || "password1"
+
 const users = [
   {
     id: 1,
-    username: process.env.USERNAME || "user1",
-    password: bcrypt.hashSync(process.env.PASSWORD || "password1", 8),
+    username: username,
+    password: bcrypt.hashSync(pass, 8),
   },
 ]
 
