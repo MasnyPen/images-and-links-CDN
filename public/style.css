@@ -38,7 +38,7 @@ main {
 
 #file-label {
   border: none;
-  background-color: rgb(3, 112, 255);
+  background-color: rgba(87,66,255,255);
   color: #fff;
   font-size: 0.8rem;
   border-radius: 20px;
