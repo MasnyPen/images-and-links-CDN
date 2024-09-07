@@ -7,6 +7,7 @@ if (localStorage.getItem("token")) {
 }
 if (!localStorage.getItem("token")) {
   logoutBtn.style.display = "none"
+  uploadForm.style.display = "none"
 }
 
 async function login(event) {

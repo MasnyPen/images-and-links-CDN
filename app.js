@@ -2,7 +2,6 @@ const express = require("express")
 const multer = require("multer")
 const { v4: uuidv4 } = require("uuid")
 const path = require("path")
-const rateLimit = require("express-rate-limit")
 const { verifyToken, users } = require("./auth.js")
 require("dotenv/config")
 const bodyParser = require("body-parser")
@@ -43,14 +42,6 @@ const upload = multer({
   },
 })
 
-// Ustawienia limitu
-const uploadLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minut
-  max: 30, // Maksymalnie 10 żądań na IP
-  message:
-    "Zbyt wiele prób przesłania plików z tego IP, spróbuj ponownie za 15 minut.",
-})
-
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
@@ -88,7 +79,7 @@ app.post("/login", (req, res) => {
 })
 
 // Endpoint do przesyłania zdjęć
-app.post("/upload", uploadLimiter, verifyToken, (req, res, next) => {
+app.post("/upload", verifyToken, (req, res, next) => {
   upload.single("image")(req, res, err => {
     if (err instanceof multer.MulterError) {
       return res
@@ -103,7 +94,7 @@ app.post("/upload", uploadLimiter, verifyToken, (req, res, next) => {
       return res.status(400).send({ error: "Brak pliku do przesłania." })
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+    const imageUrl = `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`
     res.send({
