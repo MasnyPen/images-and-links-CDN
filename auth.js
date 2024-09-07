@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken")
 require("dotenv/config")
 const username = process.env.USER || "user1"
 const pass = process.env.PASSWORD || "password1"
+console.log(username, pass)
 
 const users = [
   {
