@@ -32,7 +32,6 @@ async function login(event) {
       loginForm.style.display = "none"
       logoutBtn.style.display = "block"
       uploadForm.style.display = "block"
-      alert("Zalogowano pomyślnie!")
     } else {
       alert("Błąd logowania: " + data.error)
     }
