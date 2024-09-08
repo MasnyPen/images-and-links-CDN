@@ -45,8 +45,8 @@ const upload = multer({
   },
 })
 
-app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 // Endpoint logowania
 app.post("/login", (req, res) => {
@@ -119,6 +119,13 @@ app.post("/links", verifyToken, upload.none(), async (req, res, next) => {
 
   if (!link) {
     return res.status(400).send({ error: "Brak linku w żądaniu" })
+  }
+
+  const regex = new RegExp(
+    /^((https?:\/\/)?(www\.)?([a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)(:\d+)?(\/[a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=%-]*)?)$/
+  )
+  if (!regex.test(link)) {
+    return res.status(400).send({ error: "Nieprawidłowy link" })
   }
 
   const linkId = generate()

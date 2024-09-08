@@ -76,24 +76,14 @@ async function uploadLinks(event) {
   event.preventDefault()
   const field = document.getElementById("link")
   let link = field.value
-  const regex =
+
+  if (!link.startsWith("https://") && !link.startsWith("http://"))
+    link = "http://" + link
+
+  const regex = new RegExp(
     /^((https?:\/\/)?(www\.)?([a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)(:\d+)?(\/[a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=%-]*)?)$/
-
-  function normalizeUrl(url) {
-    if (regex.test(url)) {
-      // Jeśli brakuje protokołu, dodaj domyślny "http://"
-      if (!/^https?:\/\//i.test(url)) {
-        return "http://" + url
-      }
-      return url // Jeśli jest poprawny, zwróć URL bez zmian
-    } else {
-      return null // Zwraca null dla niepoprawnych URL
-    }
-  }
-
-  link = normalizeUrl(link) // Znormalizuj link, nawet jeśli regex go przepuścił
-
-  if (!link) {
+  )
+  if (!regex.test(link)) {
     field.value = ""
     alert("Podany tekst nie jest prawidłowym linkiem!")
     return
