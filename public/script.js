@@ -60,7 +60,7 @@ async function uploadFile(event) {
       },
       body: formData,
     })
-    console.log(response)
+    console.log(response.body)
     const data = await response.json()
 
     if (response.ok) {
