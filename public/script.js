@@ -60,8 +60,7 @@ async function uploadFile(event) {
       },
       body: formData,
     })
-    console.log(response.ok)
-    const data = await response.formData()
+    const data = await response.json()
 
     if (response.ok) {
       alert("Plik przesłany pomyślnie! URL: " + data.imageUrl)
