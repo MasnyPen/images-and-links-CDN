@@ -45,9 +45,6 @@ const upload = multer({
   },
 })
 
-app.use(bodyParser.json({ limit: "10mb" }))
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }))
-
 // Endpoint logowania
 app.post("/login", (req, res) => {
   if (!req.body) return res.status(400).send({ error: "Niepoprawne dane" })
