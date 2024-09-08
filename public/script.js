@@ -69,7 +69,7 @@ async function uploadFile(event) {
       alert("Błąd przesyłania pliku: " + data.error)
     }
   } catch (err) {
-    console.log(err.message)
+    console.log(err)
     alert("Wystąpił błąd: " + err.message)
   }
 }
