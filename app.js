@@ -45,6 +45,9 @@ const upload = multer({
   },
 })
 
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+
 // Endpoint logowania
 app.post("/login", (req, res) => {
   if (!req.body) return res.status(400).send({ error: "Niepoprawne dane" })
