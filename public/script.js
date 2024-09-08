@@ -63,13 +63,14 @@ async function uploadFile(event) {
 
     const data = await response.json()
 
+    console.log("err")
+
     if (response.ok) {
       alert("Plik przesłany pomyślnie! URL: " + data.imageUrl)
     } else {
       alert("Błąd przesyłania pliku: " + data.error)
     }
   } catch (err) {
-    console.log(err)
     alert("Wystąpił błąd: " + err.message)
   }
 }
