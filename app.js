@@ -28,6 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/
     const extname = allowedTypes.test(
@@ -44,9 +45,6 @@ const upload = multer({
     }
   },
 })
-
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
 
 // Endpoint logowania
 app.post("/login", (req, res) => {
