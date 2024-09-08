@@ -28,7 +28,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-
+  limits: {
+    fileSize: 10 * 1024 * 1024, // Maksymalny rozmiar pliku: 10 MB
+  },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/
     const extname = allowedTypes.test(
@@ -45,6 +47,9 @@ const upload = multer({
     }
   },
 })
+
+app.use(bodyParser.json({ limit: "10mb" }))
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }))
 
 // Endpoint logowania
 app.post("/login", (req, res) => {
