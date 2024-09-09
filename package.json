@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon .",
-    "update": "node start.js https://github.com/MasnyPen/cdn"
+    "start": "nodemon ."
   },
   "keywords": [],
   "author": "",

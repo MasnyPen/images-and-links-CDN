@@ -127,7 +127,6 @@ app.post("/links", verifyToken, upload.none(), async (req, res, next) => {
   const shortenedLink = `${req.protocol}://${req.get("host")}/${linkId}`
 
   if (process.env.DB_MYSQL == "true") {
-    // MySQL
     db.query(
       "INSERT INTO links (original_link, link_id) VALUES (?, ?)",
       [link, linkId],
@@ -142,7 +141,6 @@ app.post("/links", verifyToken, upload.none(), async (req, res, next) => {
       }
     )
   } else {
-    // SQLite
     try {
       db.prepare(
         "INSERT INTO links (original_link, link_id) VALUES (?, ?)"
