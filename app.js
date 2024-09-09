@@ -1,6 +1,5 @@
 const express = require("express")
 const multer = require("multer")
-const { v4: uuidv4 } = require("uuid")
 const path = require("path")
 const { verifyToken, users } = require("./lib/auth.js")
 require("dotenv/config")
@@ -53,7 +52,6 @@ app.post("/login", (req, res) => {
   if (!req.body) return res.status(400).send({ error: "Niepoprawne dane" })
   const { username, password } = req.body
 
-  // Znajdź użytkownika na podstawie nazwy użytkownika
   const user = users.find(u => u.username === username)
   if (!user) {
     return res
@@ -61,7 +59,6 @@ app.post("/login", (req, res) => {
       .send({ error: "Nieprawidłowa nazwa użytkownika lub hasło" })
   }
 
-  // Sprawdź, czy hasło jest poprawne
   const isPasswordValid = bcrypt.compareSync(password, user.password)
   if (!isPasswordValid) {
     return res
@@ -69,7 +66,6 @@ app.post("/login", (req, res) => {
       .send({ error: "Nieprawidłowa nazwa użytkownika lub hasło" })
   }
 
-  // Generowanie tokenu JWT
   const token = jwt.sign(
     { id: user.id, username: user.username },
     process.env.SECRET_KEY,
@@ -92,7 +88,6 @@ app.post("/images", verifyToken, (req, res, next) => {
       return res.status(400).send({ error: err.message })
     }
 
-    // Kontynuowanie, jeśli nie było błędów
     if (!req.file) {
       return res.status(400).send({ error: "Brak pliku do przesłania." })
     }
@@ -109,7 +104,7 @@ app.post("/images", verifyToken, (req, res, next) => {
 
 app.use("/images", express.static(path.join(__dirname, "imgs")))
 
-// Serwowanie pliku index.html na ścieżce '/'
+// Panel
 app.use("/", express.static(path.join(__dirname, "public")))
 
 // linki
@@ -131,36 +126,68 @@ app.post("/links", verifyToken, upload.none(), async (req, res, next) => {
   const linkId = generate()
   const shortenedLink = `${req.protocol}://${req.get("host")}/${linkId}`
 
-  db.query(
-    "INSERT INTO links (original_link, link_id) VALUES (?, ?)",
-    [link, linkId],
-    (err, results) => {
-      if (err) {
-        return res.status(500).send({ error: "Błąd zapisu w bazie danych" })
+  if (process.env.DB_MYSQL == "true") {
+    // MySQL
+    db.query(
+      "INSERT INTO links (original_link, link_id) VALUES (?, ?)",
+      [link, linkId],
+      (err, results) => {
+        if (err) {
+          return res.status(500).send({ error: "Błąd zapisu w bazie danych" })
+        }
+        res.send({
+          message: "Link skrócony pomyślnie!",
+          url: shortenedLink,
+        })
       }
+    )
+  } else {
+    // SQLite
+    try {
+      db.prepare(
+        "INSERT INTO links (original_link, link_id) VALUES (?, ?)"
+      ).run(link, linkId)
       res.send({
         message: "Link skrócony pomyślnie!",
         url: shortenedLink,
       })
+    } catch (err) {
+      res.status(500).send({ error: "Błąd zapisu w bazie danych" })
     }
-  )
+  }
 })
 
 app.get("/:linkId", (req, res) => {
   const linkId = req.params.linkId
 
-  db.query(
-    "SELECT original_link FROM links WHERE link_id = ?",
-    [linkId],
-    (err, results) => {
-      if (err || results.length === 0) {
+  if (process.env.DB_MYSQL == "true") {
+    db.query(
+      "SELECT original_link FROM links WHERE link_id = ?",
+      [linkId],
+      (err, results) => {
+        if (err || results.length === 0) {
+          return res.status(404).send({ error: "Link nie znaleziony" })
+        }
+
+        const originalLink = results[0].original_link
+        res.redirect(originalLink)
+      }
+    )
+  } else {
+    try {
+      const row = db
+        .prepare("SELECT original_link FROM links WHERE link_id = ?")
+        .get(linkId)
+      if (!row) {
         return res.status(404).send({ error: "Link nie znaleziony" })
       }
 
-      const originalLink = results[0].original_link
+      const originalLink = row.original_link
       res.redirect(originalLink)
+    } catch (err) {
+      res.status(500).send({ error: "Błąd zapisu w bazie danych" })
     }
-  )
+  }
 })
 
 // Uruchomienie serwera
