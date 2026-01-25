@@ -106,12 +106,17 @@ app.post("/images", verifyToken, (req, res, next) => {
 app.use("/images", express.static(path.join(__dirname, "imgs")))
 
 // Download Images
-app.get("/download/:fileName", (req, res) => {
-  const filePath = path.join(__dirname, "imgs", req.params.fileName)
+app.get("/download/*", (req, res) => {
+  const relativePath = req.params[0]
+  const filePath = path.join(__dirname, "imgs", relativePath)
+
   res.download(filePath, err => {
-    if (err) res.status(404).send("Plik nie znaleziony")
+    if (err) {
+      res.status(404).send("Plik nie znaleziony")
+    }
   })
 })
+
 
 // Panel
 app.use("/", express.static(path.join(__dirname, "public")))
