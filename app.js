@@ -10,7 +10,7 @@ const { connect, db } = require("./lib/database.js")
 const { generate } = require("./lib/generator.js")
 
 const app = express()
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 3000
 connect()
 
 // Konfiguracja multer
@@ -102,27 +102,16 @@ app.post("/images", verifyToken, (req, res, next) => {
   })
 })
 
-app.use("/images", (req, res, next) => {
-  const filePath = path.join(__dirname, "imgs", req.path)
+// Images
+app.use("/images", express.static(path.join(__dirname, "imgs")))
 
+// Download Images
+app.get("/download/:fileName", (req, res) => {
+  const filePath = path.join(__dirname, "imgs", req.params.fileName)
   res.download(filePath, err => {
-    if (err) {
-      next()
-    }
+    if (err) res.status(404).send("Plik nie znaleziony")
   })
 })
-
-app.get("/images/:fileName", (req, res) => {
-  const fileName = req.params.fileName
-  const filePath = path.join(__dirname, "imgs", fileName)
-
-  res.download(filePath, fileName, err => {
-    if (err) {
-      res.status(404).send("Plik nie znaleziony")
-    }
-  })
-})
-
 
 // Panel
 app.use("/", express.static(path.join(__dirname, "public")))
