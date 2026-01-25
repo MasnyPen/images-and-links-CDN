@@ -10,7 +10,7 @@ const { connect, db } = require("./lib/database.js")
 const { generate } = require("./lib/generator.js")
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 4000
 connect()
 
 // Konfiguracja multer
@@ -106,8 +106,8 @@ app.post("/images", verifyToken, (req, res, next) => {
 app.use("/images", express.static(path.join(__dirname, "imgs")))
 
 // Download Images
-app.get("/download/*", (req, res) => {
-  const relativePath = req.params[0]
+app.use("/download", (req, res) => {
+  const relativePath = req.path.replace(/^\//, "")
   const filePath = path.join(__dirname, "imgs", relativePath)
 
   res.download(filePath, err => {
